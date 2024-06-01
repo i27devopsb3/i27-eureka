@@ -16,6 +16,7 @@ pipeline {
                 echo "Building the Eureka Application"
                 //mvn command 
                 sh 'mvn clean package -DskipTests=true'
+                archiveArtifacts artifacts: 'target/*.jar'
             }
         }
     }
