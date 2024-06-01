@@ -7,8 +7,11 @@ pipeline {
     }
     stages {
         stage ('Build') {
+            // This step will take care of building the application
             steps {
-                echo 'Hello World!!!'
+                echo "Building the Eureka Application"
+                //mvn command 
+                sh 'mvn clean package -DskipTests=true'
             }
         }
     }
