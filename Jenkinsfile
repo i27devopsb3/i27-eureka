@@ -27,6 +27,12 @@ pipeline {
                 echo "Executing Unit tests for ${env.APPLICATION_NAME} Application"
                 sh 'mvn test'
             }
+            // post {
+            //     always {
+            //         junit 'taget/surefire-reports/*.xml'
+            //         jacoco 
+            //     }
+            // }
         }
     }
 }
