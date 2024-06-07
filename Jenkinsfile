@@ -55,11 +55,13 @@ pipeline {
         stage ('Docker Format') {
             steps {
                 //i27-eureka-0.0.1-SNAPSHOT.jar
+                // install Pipeline Utility Steps plugin before we run this stage
 
-                // Expected : eureka-buildnumber-branchname.jar
                 // Current Format
-                echo "The Actual Format is: i27-${env.APPLICATION_NAME}-${env.POM_VERSION}.${env.POM_PACKAGING}"
-
+                echo "The Current Format is: i27-${env.APPLICATION_NAME}-${env.POM_VERSION}.${env.POM_PACKAGING}"
+                                
+                                // Expected : eureka-buildnumber-branchname.jar
+                echo "The Custom Format is: ${env.APPLICATION_NAME}-${currentBuild.number}-${BRANCH_NAME}.${env.POM_PACKAGING}"
 
                 // Custom Format 
             }
