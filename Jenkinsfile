@@ -11,6 +11,9 @@ pipeline {
     }
     environment {
         APPLICATION_NAME = "eureka"
+        // https://www.jenkins.io/doc/pipeline/steps/pipeline-utility-steps/#readmavenpom-read-a-maven-project-file
+        POM_VERSION = readMavenPom().getVersion()
+        POM_PACKAGING = readMavenPom().getPackaging()
         SONAR_URL = "http://35.196.148.247:9000"
         SONAR_TOKEN = credentials('sonar_creds')
     }
@@ -37,7 +40,8 @@ pipeline {
         //     }
         // }
         stage ('Sonar') {
-            //sqa_a25af99d06b87a263ccf7aed9033cd9d80b97b36
+
+            // Code Quality needs to be implemented 
             steps {
                 sh """
                 echo "Starting Sonar Scan"
@@ -48,6 +52,19 @@ pipeline {
                 """
             }
         }
+        stage ('Docker Format') {
+            steps {
+                //i27-eureka-0.0.1-SNAPSHOT.jar
+
+                // Expected : eureka-buildnumber-branchname.jar
+                // Current Format
+                echo "The Actual Format is: i27-${env.APPLICATION_NAME}-${env.POM_VERSION}.${env.POM_PACKAGING}"
+
+
+                // Custom Format 
+            }
+        }
+
     }
 }
 
