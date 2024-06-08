@@ -73,7 +73,7 @@ pipeline {
                 ls -la ./.cicd/
                 echo "**************************** Building Docker Image ****************************"
                 docker build --build-arg JAR_SOURCE=i27-${env.APPLICATION_NAME}-${env.POM_VERSION}.${env.POM_PACKAGING} -t ${env.DOCKER_HUB}/${env.APPLICATION_NAME}:${GIT_COMMIT} ./.cicd
-                docke images
+                docker images
                 # docker.io/i27k8s10/eureka:.
                 """
             }
