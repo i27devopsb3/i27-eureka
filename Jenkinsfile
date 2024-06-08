@@ -16,6 +16,8 @@ pipeline {
         POM_PACKAGING = readMavenPom().getPackaging()
         SONAR_URL = "http://35.196.148.247:9000"
         SONAR_TOKEN = credentials('sonar_creds')
+        DOCKER_HUB = "docker.io/i27k8s10"
+        // DOCKER_APPLICATION_NAME = "i27k8s10"
     }
     stages {
         stage ('Build') {
@@ -69,6 +71,10 @@ pipeline {
                 cp ${WORKSPACE}/target/i27-${env.APPLICATION_NAME}-${env.POM_VERSION}.${env.POM_PACKAGING} ./.cicd/
                 echo "Listing Files in .cicd folder"
                 ls -la ./.cicd/
+                echo "**************************** Building Docker Image ****************************"
+                docker build --build-arg JAR_SOURCE=i27-${env.APPLICATION_NAME}-${env.POM_VERSION}.${env.POM_PACKAGING} -t ${env.DOCKER_HUB}/${env.APPLICATION_NAME}:${GIT_COMMIT} ./.cicd
+                docke images
+                # docker.io/i27k8s10/eureka:.
                 """
             }
         }
