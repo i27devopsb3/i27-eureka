@@ -62,14 +62,17 @@ pipeline {
         }
         stage ("Docker Build and Push") {
             steps {
-                echo 'Starting Docker build stage'
+                echo "Starting Docker build stage"
                 sh """
                 ls -la
                 pwd
+                cp ${WORKSPACE}/target/i27-${env.APPLICATION_NAME}-${env.POM_VERSION}.${env.POM_PACKAGING} ./.cicd/
+                echo "Listing Files in .cicd folder"
+                ls -la ./.cicd/
                 """
             }
         }
-
+i27-eureka-0.0.1-SNAPSHOT.jar
 
     }
 }
