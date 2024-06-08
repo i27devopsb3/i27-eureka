@@ -72,7 +72,6 @@ pipeline {
                 """
             }
         }
-i27-eureka-0.0.1-SNAPSHOT.jar
 
     }
 }
