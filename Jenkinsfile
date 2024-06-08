@@ -17,6 +17,7 @@ pipeline {
         SONAR_URL = "http://35.196.148.247:9000"
         SONAR_TOKEN = credentials('sonar_creds')
         DOCKER_HUB = "docker.io/i27k8s10"
+        DOCKER_CREDS = credentials('docker_creds')
         // DOCKER_APPLICATION_NAME = "i27k8s10"
     }
     stages {
@@ -77,7 +78,8 @@ pipeline {
                 echo "**************************** Building Docker Image ****************************"
                 docker build --force-rm --no-cache --build-arg JAR_SOURCE=i27-${env.APPLICATION_NAME}-${env.POM_VERSION}.${env.POM_PACKAGING} -t ${env.DOCKER_HUB}/${env.APPLICATION_NAME}:${GIT_COMMIT} ./.cicd
                 docker images
-                # docker.io/i27k8s10/eureka:.
+                echo "**************************** Login to Docke Repo ****************************"
+                docker login -u ${DOCKER_CREDS_USR} -p ${DOCKER_CREDS_PSW}
                 """
             }
         }
