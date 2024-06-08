@@ -63,6 +63,10 @@ pipeline {
         stage ("Docker Build and Push") {
             steps {
                 echo 'Starting Docker build stage'
+                sh """
+                ls -la
+                pwd
+                """
             }
         }
 
