@@ -119,7 +119,10 @@ pipeline {
             //     label 'docker-slave'
             // }
             steps {
-                dockerBuildandPush().call()
+                script {
+                    dockerBuildandPush().call()
+                }
+
             }
         }
         stage ('Deploy To Dev') {
