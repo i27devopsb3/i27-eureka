@@ -95,7 +95,11 @@ pipeline {
                     // and will execute what all commands i want to go for 
                     
                    // sshpass -p password ssh -o StrictHostKeyChecking=no username@hostip command_to_run
-                   sh "sshpass -p ${PASSWORD} ssh -o StrictHostKeyChecking=no ${USERNAME}@${docker_server_ip} hostname -i"
+                   // sh "sshpass -p ${PASSWORD} ssh -o StrictHostKeyChecking=no ${USERNAME}@${docker_server_ip} hostname -i"
+                   // docker run -d -p hp:cp --name containername image:tagname
+                   // docker run -d -p 5761:8761 --name ${env.APPLICATION_NAME}-dev ${env.DOCKER_HUB}/${env.APPLICATION_NAME}:${GIT_COMMIT}
+                  echo "Creating the Container"
+                   sh "sshpass -p ${PASSWORD} ssh -o StrictHostKeyChecking=no ${USERNAME}@${docker_server_ip} docker run -d -p 5761:8761 --name ${env.APPLICATION_NAME}-dev ${env.DOCKER_HUB}/${env.APPLICATION_NAME}:${GIT_COMMIT}"
                 }
             }
         }
@@ -107,7 +111,16 @@ pipeline {
 // Deploy to dev flow
 1) jenkins should be connecting to the dev server using username and passwrd 
 2) The password shoyld be availanle in the credentials
-3) */
+
+Different environments will have different host ports and same container port(8761)
+// for this eureka microservice , i will define the below host ports 
+
+// dev env ====> host port is 5761
+// test env ====> host port is 6761
+// stage env ====> host port is 7761
+// Prod env ======> host port is 8761
+
+*/
 
 // Sonar Scan Command 
 // mvn sonar:sonar user/passwrd or token and where my sonar(host url) is and project key
