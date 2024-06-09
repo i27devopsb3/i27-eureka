@@ -19,6 +19,7 @@ pipeline {
         DOCKER_HUB = "docker.io/i27k8s10"
         DOCKER_CREDS = credentials('docker_creds')
         // DOCKER_APPLICATION_NAME = "i27k8s10"
+        // DOCKER_HOST_IP = "1.2.3.4"
     }
     stages {
         stage ('Build') {
@@ -85,9 +86,28 @@ pipeline {
                 """
             }
         }
+        stage ('Deploy To Dev') {
+            steps {
+                echo "**************************** Deploying to Dev Environment ****************************"
+                withCredentials([usernamePassword(credentialsId: 'maha_docker_vm_creds', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
+                    // some block
+                    // With this block, the slave will be connecting to the docker-server using ssh 
+                    // and will execute what all commands i want to go for 
+                    
+                   // sshpass -p password ssh -o StrictHostKeyChecking=no username@hostip command_to_run
+                   sh "sshpass -p ${PASSWORD} ssh -o StrictHostKeyChecking=no ${USERNAME}@${docker_server_ip} hostname -i"
+                }
+            }
+        }
 
     }
 }
+
+
+// Deploy to dev flow
+1) jenkins should be connecting to the dev server using username and passwrd 
+2) The password shoyld be availanle in the credentials
+3) 
 
 // Sonar Scan Command 
 // mvn sonar:sonar user/passwrd or token and where my sonar(host url) is and project key
