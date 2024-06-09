@@ -117,6 +117,29 @@ pipeline {
                 }
             }
         }
+        stage ('Deploy To Test') {
+            steps {
+                echo "**************************** Deploying to Test Environment ****************************"
+                withCredentials([usernamePassword(credentialsId: 'maha_docker_vm_creds', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
+                  script {
+                    // Pull the image on the docker server
+                    sh "sshpass -p ${PASSWORD} ssh -o StrictHostKeyChecking=no ${USERNAME}@${docker_server_ip} docker pull ${env.DOCKER_HUB}/${env.APPLICATION_NAME}:${GIT_COMMIT}"
+                    try {
+                        // Stop the container
+                        sh "sshpass -p ${PASSWORD} ssh -o StrictHostKeyChecking=no ${USERNAME}@${docker_server_ip} docker stop ${env.APPLICATION_NAME}-test"
+                        // Remove the Container
+                        sh "sshpass -p ${PASSWORD} ssh -o StrictHostKeyChecking=no ${USERNAME}@${docker_server_ip} docker rm ${env.APPLICATION_NAME}-test"
+                    } catch(err) {
+                        echo "Error Caught: $err"
+                    }
+                    // Create the container
+                    echo "Creating the Container"
+                    sh "sshpass -p ${PASSWORD} ssh -o StrictHostKeyChecking=no ${USERNAME}@${docker_server_ip} docker run -d -p 6761:8761 --name ${env.APPLICATION_NAME}-test ${env.DOCKER_HUB}/${env.APPLICATION_NAME}:${GIT_COMMIT}"
+                  }
+                  
+                }
+            }
+        }
 
     }
 }
