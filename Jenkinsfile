@@ -5,6 +5,36 @@ pipeline {
     agent {
         label 'k8s-slave'
     }
+    parameters {
+        choice (name: 'buildOnly',
+               choices: 'no\nyes',
+               description: "Build the applcation only"
+        )
+        choice (name: 'scanOnly',
+               choices: 'no\nyes',
+               description: "This will scan the applciation"
+        )
+        choice (name: 'dockerPush',
+               choices: 'no\nyes',
+               description: "This will build the app, push to registry"
+        )
+        choice (name: 'deployToDev',
+               choices: 'no\nyes',
+               description: "This will deploy the app to Dev Env"
+        )
+        choice (name: 'deployToTest',
+               choices: 'no\nyes',
+               description: "This will deploy the app to Test Env"
+        )
+        choice (name: 'deployToStage',
+               choices: 'no\nyes',
+               description: "This will deploy the app to Stage Env"
+        )
+        choice (name: 'deployToProd',
+               choices: 'no\nyes',
+               description: "This will deploy the app to Prod Env"
+        )
+    }
     tools {
         maven 'Maven-3.8.8'
         jdk 'JDK-17'
@@ -23,6 +53,13 @@ pipeline {
     }
     stages {
         stage ('Build') {
+            when {
+                anyOf {
+                    expression {
+                        params.buildOnly == 'yes'
+                    }
+                }
+            }
             // This step will take care of building the application
             steps {
                 echo "Building the ${env.APPLICATION_NAME} Application"
@@ -44,6 +81,13 @@ pipeline {
         //     }
         // }
         stage ('Sonar') {
+            when {
+                anyOf {
+                    expression {
+                        params.scanOnly == 'yes'
+                    }
+                }
+            }
             steps {
                 // Code Quality needs to be implemented 
                 echo "Starting Sonar Scans with Quality Gates"
@@ -65,6 +109,13 @@ pipeline {
             }
         }
         stage ("Docker Build and Push") {
+            when {
+                anyOf {
+                    expression {
+                        params.dockerPush == 'yes'
+                    }
+                }
+            }
             // agent {
             //     label 'docker-slave'
             // }
@@ -87,6 +138,13 @@ pipeline {
             }
         }
         stage ('Deploy To Dev') {
+            when {
+                anyOf {
+                    expression {
+                        params.deployToDev == 'yes'
+                    }
+                }
+            }
             steps {
                 script {
                     dockerDeploy('dev', '5761', '8761').call()
@@ -95,6 +153,13 @@ pipeline {
             }
         }
         stage ('Deploy To Test') {
+            when {
+                anyOf {
+                    expression {
+                        params.deployToTest == 'yes'
+                    }
+                }
+            }
             steps {
                 script {
                     dockerDeploy('test', '6761', '8761').call()
@@ -103,6 +168,13 @@ pipeline {
             }
         }
         stage ('Deploy To Stage') {
+            when {
+                anyOf {
+                    expression {
+                        params.deployToStage == 'yes'
+                    }
+                }
+            }
             steps {
                 script {
                     dockerDeploy('stage', '7761', '8761').call()
@@ -111,6 +183,13 @@ pipeline {
             }
         }
         stage ('Deploy To Prod') {
+            when {
+                anyOf {
+                    expression {
+                        params.deployToProd == 'yes'
+                    }
+                }
+            }
             steps {
                 script {
                     dockerDeploy('prod', '8761', '8761').call()
