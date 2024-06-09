@@ -103,11 +103,11 @@ pipeline {
     }
 }
 
-
+/*
 // Deploy to dev flow
 1) jenkins should be connecting to the dev server using username and passwrd 
 2) The password shoyld be availanle in the credentials
-3) 
+3) */
 
 // Sonar Scan Command 
 // mvn sonar:sonar user/passwrd or token and where my sonar(host url) is and project key
