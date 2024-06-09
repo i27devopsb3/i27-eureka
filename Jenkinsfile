@@ -88,55 +88,33 @@ pipeline {
         }
         stage ('Deploy To Dev') {
             steps {
-                echo "**************************** Deploying to Dev Environment ****************************"
-                withCredentials([usernamePassword(credentialsId: 'maha_docker_vm_creds', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
-                    // some block
-                    // With this block, the slave will be connecting to the docker-server using ssh 
-                    // and will execute what all commands i want to go for 
-                    
-                   // sshpass -p password ssh -o StrictHostKeyChecking=no username@hostip command_to_run
-                   // sh "sshpass -p ${PASSWORD} ssh -o StrictHostKeyChecking=no ${USERNAME}@${docker_server_ip} hostname -i"
-                   // docker run -d -p hp:cp --name containername image:tagname
-                   // docker run -d -p 5761:8761 --name ${env.APPLICATION_NAME}-dev ${env.DOCKER_HUB}/${env.APPLICATION_NAME}:${GIT_COMMIT}
-                  script {
-                    // Pull the image on the docker server
-                    sh "sshpass -p ${PASSWORD} ssh -o StrictHostKeyChecking=no ${USERNAME}@${docker_server_ip} docker pull ${env.DOCKER_HUB}/${env.APPLICATION_NAME}:${GIT_COMMIT}"
-                    try {
-                        // Stop the container
-                        sh "sshpass -p ${PASSWORD} ssh -o StrictHostKeyChecking=no ${USERNAME}@${docker_server_ip} docker stop ${env.APPLICATION_NAME}-dev"
-                        // Remove the Container
-                        sh "sshpass -p ${PASSWORD} ssh -o StrictHostKeyChecking=no ${USERNAME}@${docker_server_ip} docker rm ${env.APPLICATION_NAME}-dev"
-                    } catch(err) {
-                        echo "Error Caught: $err"
-                    }
-                    // Create the container
-                    echo "Creating the Container"
-                    sh "sshpass -p ${PASSWORD} ssh -o StrictHostKeyChecking=no ${USERNAME}@${docker_server_ip} docker run -d -p 5761:8761 --name ${env.APPLICATION_NAME}-dev ${env.DOCKER_HUB}/${env.APPLICATION_NAME}:${GIT_COMMIT}"
-                  }
-                  
+                script {
+                    dockerDeploy('dev', '5761', '8761').call()
+                    echo "Deployed to Dev Environment Succesfully!!!"
                 }
             }
         }
         stage ('Deploy To Test') {
             steps {
-                echo "**************************** Deploying to Test Environment ****************************"
-                withCredentials([usernamePassword(credentialsId: 'maha_docker_vm_creds', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
-                  script {
-                    // Pull the image on the docker server
-                    sh "sshpass -p ${PASSWORD} ssh -o StrictHostKeyChecking=no ${USERNAME}@${docker_server_ip} docker pull ${env.DOCKER_HUB}/${env.APPLICATION_NAME}:${GIT_COMMIT}"
-                    try {
-                        // Stop the container
-                        sh "sshpass -p ${PASSWORD} ssh -o StrictHostKeyChecking=no ${USERNAME}@${docker_server_ip} docker stop ${env.APPLICATION_NAME}-test"
-                        // Remove the Container
-                        sh "sshpass -p ${PASSWORD} ssh -o StrictHostKeyChecking=no ${USERNAME}@${docker_server_ip} docker rm ${env.APPLICATION_NAME}-test"
-                    } catch(err) {
-                        echo "Error Caught: $err"
-                    }
-                    // Create the container
-                    echo "Creating the Container"
-                    sh "sshpass -p ${PASSWORD} ssh -o StrictHostKeyChecking=no ${USERNAME}@${docker_server_ip} docker run -d -p 6761:8761 --name ${env.APPLICATION_NAME}-test ${env.DOCKER_HUB}/${env.APPLICATION_NAME}:${GIT_COMMIT}"
-                  }
-                  
+                script {
+                    dockerDeploy('test', '6761', '8761').call()
+                    echo "Deployed to Test Environment Succesfully!!!"
+                }
+            }
+        }
+        stage ('Deploy To Stage') {
+            steps {
+                script {
+                    dockerDeploy('stage', '7761', '8761').call()
+                    echo "Deployed to Stage Environment Succesfully!!!"
+                }
+            }
+        }
+        stage ('Deploy To Prod') {
+            steps {
+                script {
+                    dockerDeploy('prod', '8761', '8761').call()
+                    echo "Deployed to Prod Environment Succesfully!!!"
                 }
             }
         }
@@ -144,6 +122,41 @@ pipeline {
     }
 }
 
+// Create a method to deploy our application into various environments 
+
+def dockerDeploy(envDeploy, hostPort, contPort) {
+    return {
+        // for every env what will change ?????
+        // application name, hostport, container port, container name, environment
+        echo "**************************** Deploying to $envDeploy Environment ****************************"
+        withCredentials([usernamePassword(credentialsId: 'maha_docker_vm_creds', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
+            script {
+                // Pull the image on the docker server
+                sh "sshpass -p ${PASSWORD} ssh -o StrictHostKeyChecking=no ${USERNAME}@${docker_server_ip} docker pull ${env.DOCKER_HUB}/${env.APPLICATION_NAME}:${GIT_COMMIT}"
+                try {
+                    // Stop the container
+                    sh "sshpass -p ${PASSWORD} ssh -o StrictHostKeyChecking=no ${USERNAME}@${docker_server_ip} docker stop ${env.APPLICATION_NAME}-$envDeploy"
+                    // Remove the Container
+                    sh "sshpass -p ${PASSWORD} ssh -o StrictHostKeyChecking=no ${USERNAME}@${docker_server_ip} docker rm ${env.APPLICATION_NAME}-$envDeploy"
+                } catch(err) {
+                    echo "Error Caught: $err"
+                }
+                // Create the container
+                echo "Creating the Container"
+                sh "sshpass -p ${PASSWORD} ssh -o StrictHostKeyChecking=no ${USERNAME}@${docker_server_ip} docker run -d -p $hostPort:$contPort --name ${env.APPLICATION_NAME}-$envDeploy ${env.DOCKER_HUB}/${env.APPLICATION_NAME}:${GIT_COMMIT}"
+            }
+            
+        }
+    }
+}
+
+
+
+
+
+
+
+// ****************************************************** Commented Code ******************************************************
 /*
 // Deploy to dev flow
 1) jenkins should be connecting to the dev server using username and passwrd 
