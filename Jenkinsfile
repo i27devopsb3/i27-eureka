@@ -183,10 +183,8 @@ pipeline {
                         }
                     }
                     anyOf {
-                        expression {
-                            branch 'release/*'
-                            // one more condition as well
-                        }
+                        branch 'release/*'
+                        // one more condition as well
                     }
                 }
             }
