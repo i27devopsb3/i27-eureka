@@ -175,9 +175,18 @@ pipeline {
         }
         stage ('Deploy To Prod') {
             when {
-                anyOf {
-                    expression {
-                        params.deployToProd == 'yes'
+                allOf {
+                    anyOf {
+                        expression {
+                            params.deployToProd == 'yes'
+                            // other condition as well
+                        }
+                    }
+                    anyOf {
+                        expression {
+                            branch 'release/*'
+                            // one more condition as well
+                        }
                     }
                 }
             }
