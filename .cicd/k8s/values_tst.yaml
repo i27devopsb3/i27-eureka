@@ -1,9 +1,9 @@
 name: i27-eureka
-fullname: i27-eureka-dev
+fullname: i27-eureka-tst
 replicas:
   default: 1
 image: 
   name: i27k8s10/eureka
   tag: random
-namespace: cart-dev-ns 
+namespace: cart-tst-ns 
 targetport: 8761
