@@ -1,0 +1,19 @@
+# actions 
+
+# app build 
+# image build 
+# image push 
+# image ===> cloud run 
+steps:
+# Build the Contianer image 
+# docker build -t imagename .
+- name: 'gcr.io/cloud-builders/docker' # i need to mention the builder   
+  args: ['build', '-t', 'us-central1-docker.pkg.dev/quantum-weft-420714/boa-repo/python:v7', '.']
+# Push the image to Container Registery (GAR)
+# docker push imagname
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['push', 'us-central1-docker.pkg.dev/quantum-weft-420714/boa-repo/python:v7']
+# Now, Deploy the image into cloud run 
+#gcloud run deploy svcname --image imagename --allow-unauthenticated --region us-centra1
+- name: 'gcr.io/cloud-builders/gcloud'
+  args: ['run', 'deploy', 'cloud-run-deploy', '--image', 'us-central1-docker.pkg.dev/quantum-weft-420714/boa-repo/python:v7', '--region', 'us-central1', '--allow-unauthenticated']
