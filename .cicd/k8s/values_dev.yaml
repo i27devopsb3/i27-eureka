@@ -5,3 +5,4 @@ replicas:
 image: 
   name: i27k8s10/eureka
   tag: random
+namespace: cart-dev-ns 
