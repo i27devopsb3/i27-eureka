@@ -1,4 +1,4 @@
 @Library("com.i27academy.slb@main") _
-helmPipeline(
+jfrogPipeline(
     appName: 'eureka'
 )
