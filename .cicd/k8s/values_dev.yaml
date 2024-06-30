@@ -3,7 +3,8 @@ fullname: i27-eureka-dev
 replicas:
   default: 1
 image: 
-  name: i27k8s10/eureka
+  # name: i27k8s10/eureka
+  name: flipkarrt.jfrog.io/cont-images-docker/eureka
   tag: random
 namespace: cart-dev-ns 
 targetport: 8761
